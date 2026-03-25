@@ -1,9 +1,26 @@
-<div>
-  <header>
+<div class="font-sans bg-gray-100 min-h-screen">
+  <header class="bg-blue-900 text-white p-4 text-xl">
     Crud de clientes
   </header>
 
-  <footer>
-    
+  <main class="p-5">
+    <button class="px-3.5 py-2 mb-4 border-none cursor-pointer rounded bg-blue-600 hover:bg-blue-700 text-white transition-colors" (click)="toggleView()">
+      {{ showList() ? 'Novo cliente' : 'Voltar para lista' }}
+    </button>
+
+    @if (showList()) {
+      <app-cliente-list
+        (onAdd)="abrirFormulario()"
+        (onEdit)="abrirFormularioEdicao($event)"
+      ></app-cliente-list>
+    } @else {
+      <app-cliente-form [cliente]="clienteEmEdicao()" (onSave)="salvarCliente()" (onCancel)="cancelarFormulario()"></app-cliente-form>
+    }
+
+  </main>
+
+  <footer class="mt-8 text-xs text-gray-600">
+    Exemplo educacional
   </footer>
 </div>
+<router-outlet></router-outlet>
