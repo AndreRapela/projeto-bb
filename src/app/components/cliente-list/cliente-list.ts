@@ -11,9 +11,11 @@ import { ClienteService } from '../../services/cliente.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClienteList {
+
   private readonly clienteService = inject(ClienteService);
 
   clientes = toSignal(this.clienteService.getClientes(), { initialValue: [] as Cliente[] });
+  
   onAdd = output<void>();
   onEdit = output<Cliente>();
 

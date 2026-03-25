@@ -9,13 +9,15 @@
 
   <div class="mb-3">
     <label class="block font-bold mb-1">CPF</label>
-    <input type="text" [(ngModel)]="novoCliente.cpf" placeholder="000.000.000-00" 
+    <input type="text" [(ngModel)]="novoCliente.cpf" (ngModelChange)="aplicarMascaraCpf($event)" placeholder="000.000.000-00" 
+           inputmode="numeric" maxlength="14"
            class="w-full p-2 border border-gray-300 rounded box-border focus:ring-2 focus:ring-blue-500 focus:outline-none transition-shadow" />
   </div>
 
   <div class="mb-3">
     <label class="block font-bold mb-1">Telefone</label>
-    <input type="text" [(ngModel)]="novoCliente.telefone" placeholder="(00) 00000-0000" 
+    <input type="text" [(ngModel)]="novoCliente.telefone" (ngModelChange)="aplicarMascaraTelefone($event)" placeholder="(00) 00000-0000" 
+           inputmode="numeric" maxlength="15"
            class="w-full p-2 border border-gray-300 rounded box-border focus:ring-2 focus:ring-blue-500 focus:outline-none transition-shadow" />
   </div>
 
@@ -71,6 +73,7 @@
         type="text"
         [(ngModel)]="novoCliente.numero"
         placeholder="Ex: 123"
+        inputmode="numeric"
         class="w-full p-2 border border-gray-300 rounded box-border focus:ring-2 focus:ring-blue-500 focus:outline-none transition-shadow"
       />
     </div>
@@ -90,4 +93,14 @@
     <button class="px-3.5 py-2 mr-1.5 border-none cursor-pointer rounded bg-blue-600 hover:bg-blue-700 text-white transition-colors" (click)="salvar()">{{ cliente() ? 'Atualizar' : 'Salvar' }}</button>
     <button class="px-3.5 py-2 mr-1.5 border-none cursor-pointer rounded bg-gray-500 hover:bg-gray-600 text-white transition-colors" (click)="cancelar()">Cancelar</button>
   </div>
+
+  @if (mensagemFormulario()) {
+    <p
+      class="mb-3 text-sm"
+      [class.text-green-700]="tipoMensagemFormulario() === 'sucesso'"
+      [class.text-red-700]="tipoMensagemFormulario() === 'erro'"
+    >
+      {{ mensagemFormulario() }}
+    </p>
+  }
 </section>

@@ -19,6 +19,8 @@ export class ClienteForm {
   private editingClienteId: number | undefined;
   buscandoEndereco = signal(false);
   mensagemCep = signal<string | null>(null);
+  mensagemFormulario = signal<string | null>(null);
+  tipoMensagemFormulario = signal<'sucesso' | 'erro' | null>(null);
 
   onCancel = output<void>();
   onSave = output<void>();
@@ -58,11 +60,31 @@ export class ClienteForm {
   }
 
   salvar() {
+    const nomeValido = this.novoCliente.nome.trim().length > 0;
+    const cpfNormalizado = this.novoCliente.cpf.replace(/\D/g, '');
+    const telefoneNormalizado = this.novoCliente.telefone.replace(/\D/g, '');
+    const cepNormalizado = this.novoCliente.cep.replace(/\D/g, '');
+    const numeroValido = this.novoCliente.numero.trim().length > 0;
+
+    if (!nomeValido || !numeroValido || cpfNormalizado.length !== 11 || (telefoneNormalizado.length !== 10 && telefoneNormalizado.length !== 11) || cepNormalizado.length !== 8) {
+      this.tipoMensagemFormulario.set('erro');
+      this.mensagemFormulario.set('Preencha os campos obrigatorios corretamente antes de salvar.');
+      alert('Preencha os campos obrigatorios corretamente antes de salvar.');
+      return;
+    }
+
     if (this.editingClienteId !== undefined) {
       this.clienteService.atualizarCliente({ ...this.novoCliente, id: this.editingClienteId });
+      this.tipoMensagemFormulario.set('sucesso');
+      this.mensagemFormulario.set('Cliente atualizado com sucesso.');
+      alert('Cliente atualizado com sucesso.');
     } else {
       this.clienteService.adicionarCliente(this.novoCliente);
+      this.tipoMensagemFormulario.set('sucesso');
+      this.mensagemFormulario.set('Cliente cadastrado com sucesso.');
+      alert('Cliente cadastrado com sucesso.');
     }
+
     this.novoCliente = this.createEmptyCliente();
     this.editingClienteId = undefined;
     this.onSave.emit();
@@ -103,6 +125,43 @@ export class ClienteForm {
     }
 
     this.novoCliente.cep = `${apenasDigitos.slice(0, 5)}-${apenasDigitos.slice(5)}`;
+  }
+
+  aplicarMascaraCpf(valor: string) {
+    const apenasDigitos = valor.replace(/\D/g, '').slice(0, 11);
+
+    if (apenasDigitos.length <= 3) {
+      this.novoCliente.cpf = apenasDigitos;
+      return;
+    }
+
+    if (apenasDigitos.length <= 6) {
+      this.novoCliente.cpf = `${apenasDigitos.slice(0, 3)}.${apenasDigitos.slice(3)}`;
+      return;
+    }
+
+    if (apenasDigitos.length <= 9) {
+      this.novoCliente.cpf = `${apenasDigitos.slice(0, 3)}.${apenasDigitos.slice(3, 6)}.${apenasDigitos.slice(6)}`;
+      return;
+    }
+
+    this.novoCliente.cpf = `${apenasDigitos.slice(0, 3)}.${apenasDigitos.slice(3, 6)}.${apenasDigitos.slice(6, 9)}-${apenasDigitos.slice(9)}`;
+  }
+
+  aplicarMascaraTelefone(valor: string) {
+    const apenasDigitos = valor.replace(/\D/g, '').slice(0, 11);
+
+    if (apenasDigitos.length <= 2) {
+      this.novoCliente.telefone = apenasDigitos;
+      return;
+    }
+
+    if (apenasDigitos.length <= 7) {
+      this.novoCliente.telefone = `(${apenasDigitos.slice(0, 2)}) ${apenasDigitos.slice(2)}`;
+      return;
+    }
+
+    this.novoCliente.telefone = `(${apenasDigitos.slice(0, 2)}) ${apenasDigitos.slice(2, 7)}-${apenasDigitos.slice(7)}`;
   }
 
   cancelar() {

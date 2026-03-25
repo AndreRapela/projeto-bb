@@ -12,7 +12,8 @@ import { RouterOutlet } from '@angular/router';
 })
 export class App {
 
-  showList = signal(true);
+  showList = signal<boolean>(true);
+
   clienteEmEdicao = signal<Cliente | null>(null);
 
   toggleView() {
@@ -38,6 +39,6 @@ export class App {
     this.clienteEmEdicao.set(null);
     this.showList.set(true);
   }
-  
+
 }
 
